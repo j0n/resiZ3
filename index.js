@@ -8,7 +8,7 @@ var config = {};
 var styles = {};
 
 
-var resizeAndUp = function() {
+var resiZ3 = function() {
   this.client = knox.createClient({
     key: config.s3.key
   , secret: config.s3.secret
@@ -16,13 +16,13 @@ var resizeAndUp = function() {
   , endpoint: config.s3.endpoint
   });
 }
-resizeAndUp.prototype.resize = function(file, options,callback) {
+resiZ3.prototype.resize = function(file, options,callback) {
   var tmp = './'+Math.round(new Date().getTime())
   gm(file).resize(options.width,options.height).write(tmp, function(err) {
-    callback(tmp);
+    callback(err, tmp);
   })
 };
-resizeAndUp.prototype.upload = function(file, options, callback) {
+resiZ3.prototype.upload = function(file, options, callback) {
   fs.stat(file, function(err, stats) {
     var headers = {
       'x-amz-acl': 'public-read',
@@ -38,7 +38,7 @@ resizeAndUp.prototype.upload = function(file, options, callback) {
     })
   }.bind(this))
 }
-resizeAndUp.prototype.merge = function(option1,option2){
+resiZ3.prototype.merge = function(option1,option2){
   var options = {};
   for (var attrname in option1) { options[attrname] = option1[attrname]; }
   for (var attrname in option2) { options[attrname] = option2[attrname]; }
@@ -46,7 +46,7 @@ resizeAndUp.prototype.merge = function(option1,option2){
 }
 
 module.exports = function(file, options, callback) {
-  var r = new resizeAndUp(config);
+  var r = new resiZ3(config);
   if (typeof options === 'string') {
     options = styles[options]
   }
@@ -56,7 +56,8 @@ module.exports = function(file, options, callback) {
   options.ext = path.extname(file);
   options.type = mime.lookup(file);
   options.folder = options.folder ? options.folder+'/' : '/'
-  r.resize(file, options,  function(filename) {
+  r.resize(file, options,  function(err, filename) {
+    if (err) { return callback(err) };
     r.upload(filename, options, callback)
   })
 }
