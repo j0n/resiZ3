@@ -1,0 +1,24 @@
+{
+  "name": "resize_and_up",
+  "version": "0.0.0",
+  "description": "resize image and upload to s3",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "s3",
+    "images",
+    "resize"
+  ],
+  "author": "Jon Andersson",
+  "license": "BSD-2-Clause",
+  "devDependencies": {
+    "colors": "~0.6.2",
+    "request": "~2.27.0"
+  },
+  "dependencies": {
+    "node-imagemagick": "~0.1.8",
+    "imagemagick-stream": "0.0.3"
+  }
+}
