@@ -1,5 +1,4 @@
 var knox = require('knox'),
-    http = require('http'),
     path = require('path'),
     mime = require('mime'),
     gm = require('gm').subClass({ imageMagick: true }),

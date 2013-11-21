@@ -13,12 +13,9 @@
   ],
   "author": "Jon Andersson",
   "license": "BSD-2-Clause",
-  "devDependencies": {
-    "colors": "~0.6.2",
-    "request": "~2.27.0"
-  },
   "dependencies": {
-    "node-imagemagick": "~0.1.8",
-    "imagemagick-stream": "0.0.3"
+    "knox": "~0.8.6",
+    "mime": "~1.2.11",
+    "gm": "~1.13.3"
   }
 }
