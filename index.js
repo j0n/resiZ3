@@ -1,6 +1,7 @@
 var knox = require('knox'),
     path = require('path'),
     mime = require('mime'),
+    Q = require('q'),
     gm = require('gm').subClass({ imageMagick: true }),
     fs = require('fs');
 
@@ -30,7 +31,7 @@ resiZ3.prototype.upload = function(file, options, callback) {
       'Content-Type': options.type
     };
     var streamIn = fs.createReadStream(file);
-    var s3url = options.folder+Math.round(new Date().getTime())+'-'+options.height+'x'+options.width+options.ext;
+    var s3url = options.folder+Math.round(new Date().getTime())+'-'+options.width+'x'+options.height+options.ext;
     var r = this.client.putStream(streamIn, s3url, headers, function(err) {
       fs.unlink(file);
       if (err) { return callback(err) }
@@ -46,6 +47,7 @@ resiZ3.prototype.merge = function(option1,option2){
 }
 
 module.exports = function(file, options, callback) {
+  var deferred = Q.defer()
   var r = new resiZ3(config);
   if (typeof options === 'string') {
     options = styles[options]
@@ -56,10 +58,15 @@ module.exports = function(file, options, callback) {
   options.ext = path.extname(file);
   options.type = mime.lookup(file);
   options.folder = options.folder ? options.folder+'/' : '/'
+
   r.resize(file, options,  function(err, filename) {
-    if (err) { return callback(err) };
-    r.upload(filename, options, callback)
+    if (err) return deferred.reject(err);
+    r.upload(filename, options, function(err, url) {
+      if (err) return deferred.reject(err);
+      deferred.resolve(url);
+    });
   })
+  return deferred.promise.nodeify(callback)
 }
 module.exports.setConfig = function(c) {
   config = c;
@@ -67,14 +74,14 @@ module.exports.setConfig = function(c) {
 module.exports.setStyle = function(key, values) {
   styles[key] = values;
 }
-module.exports.setStyles = function(styles) {
-  if (typeof options === 'string') {
-    fs.readFile(options, 'utf8', function (err, data) {
+module.exports.setStyles = function(_styles) {
+  if (typeof _styles === 'string') {
+    fs.readFile(_styles, 'utf8', function (err, data) {
       if (err) { throw err }
       style = JSON.parse(data);
     });
   }
   else {
-    styles = styles;
+    styles = _styles;
   }
 }
