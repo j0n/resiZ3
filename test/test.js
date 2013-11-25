@@ -14,3 +14,6 @@ r('./test/image.png',{style: 'middle', folder: 'tmp'}, function(err, url) {
   console.log('file uploaded to amazon', url);
 });
 
+r.rawUpload('./test/image.png',{folder: 'tmp'}, function(err, url) {
+  console.log('file uploaded to amazon', url);
+});

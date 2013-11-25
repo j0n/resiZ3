@@ -31,9 +31,15 @@ resiZ3.prototype.upload = function(file, options, callback) {
       'Content-Type': options.type
     };
     var streamIn = fs.createReadStream(file);
-    var s3url = options.folder+Math.round(new Date().getTime())+'-'+options.width+'x'+options.height+options.ext;
+    var s3url = options.folder+Math.round(new Date().getTime());
+    if (options.width && options.height) {
+      s3url +='-'+options.width+'x'+options.height
+    }
+    s3url += options.ext;
     var r = this.client.putStream(streamIn, s3url, headers, function(err) {
-      fs.unlink(file);
+      if (options.width || options.height) {
+        fs.unlink(file);
+      }
       if (err) { return callback(err) }
       callback(null, r.url)
     })
@@ -66,6 +72,18 @@ module.exports = function(file, options, callback) {
       deferred.resolve(url);
     });
   })
+  return deferred.promise.nodeify(callback)
+}
+module.exports.rawUpload = function(file, options, callback) {
+  var deferred = Q.defer()
+  var r = new resiZ3(config);
+  options.ext = path.extname(file);
+  options.type = mime.lookup(file);
+  options.folder = options.folder ? options.folder+'/' : '/'
+  r.upload(file, options, function(err, url) {
+    if (err) return deferred.reject(err);
+    deferred.resolve(url);
+  });
   return deferred.promise.nodeify(callback)
 }
 module.exports.setConfig = function(c) {

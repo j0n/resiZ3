@@ -43,3 +43,9 @@ resiZ3('./image.png',{style: 'middle', folder: 'tmp'}, function(err, url) {
   console.log('file uploaded to amazon', url);
 });
 ```
+## upload without resize
+```javascript
+resiZ3.rawUpload('./image.png',{folder: 'tmp'}, function(err, url) {
+  console.log('file uploaded to amazon', url);
+});
+```
