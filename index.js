@@ -18,7 +18,7 @@ var resiZ3 = function() {
   });
 }
 resiZ3.prototype.resize = function(file, options,callback) {
-  var tmp = './'+Math.round(new Date().getTime())
+  var tmp = file+'_'+Math.round(new Date().getTime())
   gm(file).resize(options.width,options.height).write(tmp, function(err) {
     callback(err, tmp);
   })
